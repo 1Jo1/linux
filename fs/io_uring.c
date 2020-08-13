@@ -4937,10 +4937,52 @@ static bool io_poll_remove_one(struct io_kiocb *req)
 		io_cqring_fill_event(req, -ECANCELED);
 		io_commit_cqring(req->ctx);
 		req->flags |= REQ_F_COMP_LOCKED;
+		req_set_fail_links(req);
 		io_put_req(req);
 	}
 
 	return do_complete;
+}
+
+static bool __io_poll_remove_link(struct io_kiocb *preq, struct io_kiocb *req)
+{
+      struct io_kiocb *link;
+
+       if (!(preq->flags & REQ_F_LINK_HEAD))
+               return false;
+
+       list_for_each_entry(link, &preq->link_list, link_list) {
+               if (link != req)
+                       break;
+               io_poll_remove_one(preq);
+              return true;
+       }
+
+       return false;
+}
+
+/*
+ * We're looking to cancel 'req' because it's holding on to our files, but
+ * 'req' could be a link to another request. See if it is, and cancel that
+ * parent request if so.
+ */
+static void io_poll_remove_link(struct io_ring_ctx *ctx, struct io_kiocb *req)
+{
+       struct hlist_node *tmp;
+      struct io_kiocb *preq;
+       int i;
+
+      spin_lock_irq(&ctx->completion_lock);
+       for (i = 0; i < (1U << ctx->cancel_hash_bits); i++) {
+               struct hlist_head *list;
+
+               list = &ctx->cancel_hash[i];
+              hlist_for_each_entry_safe(preq, tmp, list, hash_node) {
+                       if (__io_poll_remove_link(preq, req))
+                               break;
+               }
+       }
+       spin_unlock_irq(&ctx->completion_lock);
 }
 
 static void io_poll_remove_all(struct io_ring_ctx *ctx)
@@ -7989,6 +8031,8 @@ static void io_uring_cancel_files(struct io_ring_ctx *ctx,
 			}
 		} else {
 			io_wq_cancel_work(ctx->io_wq, &cancel_req->work);
+			/* could be a link, check and remove if it is */
+			io_poll_remove_link(ctx, cancel_req);
 			io_put_req(cancel_req);
 		}
 
