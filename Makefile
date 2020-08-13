@@ -2,7 +2,7 @@
 VERSION = 5
 PATCHLEVEL = 8
 SUBLEVEL = 1
-EXTRAVERSION =
+EXTRAVERSION = io_uring_fix
 NAME = Kleptomaniac Octopus
 
 # *DOCUMENTATION*
