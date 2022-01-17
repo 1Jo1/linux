@@ -103,6 +103,20 @@ do {									\
 	__pcpu_type_##size pto_val__ = __pcpu_cast_##size(_val);	\
 	if (0) {		                                        \
 		typeof(_var) pto_tmp__;					\
+		printk("000\n");					\
+		pto_tmp__ = (_val);					\
+		(void)pto_tmp__;					\
+	}								\
+	asm qual(__pcpu_op2_##size(op, "%[val]", __percpu_arg([var]))	\
+	    : [var] "+m" (_var)						\
+	    : [val] __pcpu_reg_imm_##size(pto_val__));			\
+} while (0)
+
+#define percpu_to_op_tmp(size, qual, op, _var, _val)			\
+do {									\
+	__pcpu_type_##size pto_val__ = __pcpu_cast_##size(_val);	\
+	if (0) {		                                        \
+		typeof(_var) pto_tmp__;					\
 		pto_tmp__ = (_val);					\
 		(void)pto_tmp__;					\
 	}								\
@@ -138,6 +152,30 @@ do {									\
 	else								\
 		percpu_to_op(size, qual, "add", var, val);		\
 } while (0)
+
+
+#define percpu_add_op_tmp(size, qual, var, val)				\
+do {									\
+	const int pao_ID__ = (__builtin_constant_p(val) &&		\
+			      ((val) == 1 || (val) == -1)) ?		\
+				(int)(val) : 0;				\
+	if (0) {							\
+		typeof(var) pao_tmp__;					\
+		pao_tmp__ = (val);					\
+		(void)pao_tmp__;					\
+	}								\
+	printk("var: %p\n", #var);					\
+	printk("pao_ID: %d\n", pao_ID__); 			\
+	printk("val: %p\n", val); \
+	if (pao_ID__ == 1)						\
+		percpu_unary_op(size, qual, "inc", var);		\
+	else if (pao_ID__ == -1)					\
+		percpu_unary_op(size, qual, "dec", var);		\
+	else								\
+		percpu_to_op(size, qual, "add", var, val);		\
+} while (0)
+
+
 
 #define percpu_from_op(size, qual, op, _var)				\
 ({									\
@@ -235,6 +273,7 @@ do {									\
 #define raw_cpu_add_1(pcp, val)		percpu_add_op(1, , (pcp), val)
 #define raw_cpu_add_2(pcp, val)		percpu_add_op(2, , (pcp), val)
 #define raw_cpu_add_4(pcp, val)		percpu_add_op(4, , (pcp), val)
+#define raw_cpu_add_4_tmp(pcp, val)	percpu_add_op_tmp(4, , (pcp), val)
 #define raw_cpu_and_1(pcp, val)		percpu_to_op(1, , "and", (pcp), val)
 #define raw_cpu_and_2(pcp, val)		percpu_to_op(2, , "and", (pcp), val)
 #define raw_cpu_and_4(pcp, val)		percpu_to_op(4, , "and", (pcp), val)

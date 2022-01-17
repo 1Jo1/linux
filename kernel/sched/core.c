@@ -6,6 +6,7 @@
  *
  *  Copyright (C) 1991-2002  Linus Torvalds
  */
+#include "asm/preempt.h"
 #define CREATE_TRACE_POINTS
 #include <trace/events/sched.h>
 #undef CREATE_TRACE_POINTS
@@ -5439,6 +5440,28 @@ void preempt_count_add(int val)
 }
 EXPORT_SYMBOL(preempt_count_add);
 NOKPROBE_SYMBOL(preempt_count_add);
+
+void preempt_count_add_tmp(int val)
+{
+#ifdef CONFIG_DEBUG_PREEMPT
+	/*
+	 * Underflow?
+	 */
+	if (DEBUG_LOCKS_WARN_ON((preempt_count() < 0)))
+		return;
+#endif
+	__preempt_count_add_tmp(val);
+#ifdef CONFIG_DEBUG_PREEMPT
+	/*
+	 * Spinlock count overflowing soon?
+	 */
+	DEBUG_LOCKS_WARN_ON((preempt_count() & PREEMPT_MASK) >=
+				PREEMPT_MASK - 10);
+#endif
+	preempt_latency_start(val);
+}
+EXPORT_SYMBOL(preempt_count_add_tmp);
+NOKPROBE_SYMBOL(preempt_count_add_tmp);
 
 /*
  * If the value passed in equals to the current preempt count

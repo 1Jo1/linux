@@ -181,6 +181,7 @@ static __always_inline unsigned char interrupt_context_level(void)
 
 #if defined(CONFIG_DEBUG_PREEMPT) || defined(CONFIG_TRACE_PREEMPT_TOGGLE)
 extern void preempt_count_add(int val);
+extern void preempt_count_add_tmp(int val);
 extern void preempt_count_sub(int val);
 #define preempt_count_dec_and_test() \
 	({ preempt_count_sub(1); should_resched(0); })
@@ -194,6 +195,7 @@ extern void preempt_count_sub(int val);
 #define __preempt_count_dec() __preempt_count_sub(1)
 
 #define preempt_count_inc() preempt_count_add(1)
+#define preempt_count_inc_tmp() preempt_count_add_tmp(1) 
 #define preempt_count_dec() preempt_count_sub(1)
 
 #ifdef CONFIG_PREEMPT_COUNT
@@ -201,6 +203,12 @@ extern void preempt_count_sub(int val);
 #define preempt_disable() \
 do { \
 	preempt_count_inc(); \
+	barrier(); \
+} while (0)
+
+#define preempt_disable_tmp() \
+do { \
+	preempt_count_inc_tmp(); \
 	barrier(); \
 } while (0)
 

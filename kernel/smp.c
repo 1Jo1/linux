@@ -1077,6 +1077,7 @@ EXPORT_SYMBOL(nr_cpu_ids);
 void __init setup_nr_cpu_ids(void)
 {
 	nr_cpu_ids = find_last_bit(cpumask_bits(cpu_possible_mask),NR_CPUS) + 1;
+	printk("nr_cpu_ids: %d \n", nr_cpu_ids);	
 }
 
 /* Called by boot processor to activate the rest. */

@@ -278,6 +278,12 @@ do {									\
 	this_cpu_ptr(&var);						\
 }))
 
+#define get_cpu_var_tmp(var)						\
+(*({									\
+	preempt_disable_tmp();						\
+	this_cpu_ptr(&var);						\
+}))
+
 /*
  * The weird & is necessary because sparse considers (void)(var) to be
  * a direct dereference of percpu variable (var).

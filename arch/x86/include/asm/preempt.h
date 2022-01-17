@@ -80,6 +80,11 @@ static __always_inline void __preempt_count_add(int val)
 	raw_cpu_add_4(__preempt_count, val);
 }
 
+static __always_inline void __preempt_count_add_tmp(int val)
+{
+	raw_cpu_add_4_tmp(__preempt_count, val);
+}
+
 static __always_inline void __preempt_count_sub(int val)
 {
 	raw_cpu_add_4(__preempt_count, -val);

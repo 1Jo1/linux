@@ -2647,7 +2647,8 @@ void __init boot_cpu_init(void)
 	int cpu = smp_processor_id();
 
 	//printk("bits: %d\n", cpu_test);
-	printk("size of bitmaps: %ld \n", sizeof(__cpu_online_mask.bits));
+	printk("NR_CPUS: %d\n", NR_CPUS);
+	printk("size of bitmaps: %ld !!!!!!!!!!!!!!!!!!!!!!!!!!\n", sizeof(__cpu_online_mask.bits));
 	/* Mark the boot cpu "present", "online" etc for SMP and UP case */
 	set_cpu_online(cpu, true);
 	set_cpu_active(cpu, true);
