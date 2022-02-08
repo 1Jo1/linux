@@ -85,7 +85,7 @@
 
 #define __pcpu_op2_1(op, src, dst) op "b " src ", " dst
 #define __pcpu_op2_2(op, src, dst) op "w " src ", " dst
-#define __pcpu_op2_4(op, src, dst) op "l " src ", " dst
+#define __pcpu_op2_4(op, src, dst) op "l " src ", " dst //using that
 #define __pcpu_op2_8(op, src, dst) op "q " src ", " dst
 
 #define __pcpu_reg_1(mod, x) mod "q" (x)
@@ -103,7 +103,6 @@ do {									\
 	__pcpu_type_##size pto_val__ = __pcpu_cast_##size(_val);	\
 	if (0) {		                                        \
 		typeof(_var) pto_tmp__;					\
-		printk("000\n");					\
 		pto_tmp__ = (_val);					\
 		(void)pto_tmp__;					\
 	}								\
@@ -115,6 +114,9 @@ do {									\
 #define percpu_to_op_tmp(size, qual, op, _var, _val)			\
 do {									\
 	__pcpu_type_##size pto_val__ = __pcpu_cast_##size(_val);	\
+	printk("size: %d\n", size); \
+	printk("op: %d\n", op);								\
+	printk("__percpu_arg[var]: %s \n", __percpu_arg([var])); 		\
 	if (0) {		                                        \
 		typeof(_var) pto_tmp__;					\
 		pto_tmp__ = (_val);					\
@@ -172,7 +174,7 @@ do {									\
 	else if (pao_ID__ == -1)					\
 		percpu_unary_op(size, qual, "dec", var);		\
 	else								\
-		percpu_to_op(size, qual, "add", var, val);		\
+		percpu_to_op_tmp(size, qual, "add", var, val);		\
 } while (0)
 
 
