@@ -135,8 +135,6 @@ do {									\
 		percpu_unary_op(size, qual, "inc", var);		\
 	else if (pao_ID__ == -1)					\
 		percpu_unary_op(size, qual, "dec", var);		\
-	else								\
-		percpu_to_op(size, qual, "add", var, val);		\
 } while (0)
 
 #define percpu_from_op(size, qual, op, _var)				\

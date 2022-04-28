@@ -201,7 +201,6 @@ extern void preempt_count_sub(int val);
 #define preempt_disable() \
 do { \
 	preempt_count_inc(); \
-	barrier(); \
 } while (0)
 
 #define sched_preempt_enable_no_resched() \
