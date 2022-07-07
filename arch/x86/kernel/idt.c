@@ -188,6 +188,7 @@ idt_setup_from_table(gate_desc *idt, const struct idt_data *t, int size, bool sy
 
 	for (; size > 0; t++, size--) {
 		idt_init_desc(&desc, t);
+    printk("idt_setup_from_table\n")
 		write_idt_entry(idt, t->vector, &desc);
 		if (sys)
 			set_bit(t->vector, system_vectors);
@@ -196,6 +197,7 @@ idt_setup_from_table(gate_desc *idt, const struct idt_data *t, int size, bool sy
 
 static __init void set_intr_gate(unsigned int n, const void *addr)
 {
+  printk("set_intr_gate\n");
 	struct idt_data data;
 
 	init_idt_data(&data, n, addr);
@@ -212,6 +214,7 @@ static __init void set_intr_gate(unsigned int n, const void *addr)
  */
 void __init idt_setup_early_traps(void)
 {
+  printk("idt_setup_early_traps\n");
 	idt_setup_from_table(idt_table, early_idts, ARRAY_SIZE(early_idts),
 			     true);
 	load_idt(&idt_descr);
@@ -222,6 +225,7 @@ void __init idt_setup_early_traps(void)
  */
 void __init idt_setup_traps(void)
 {
+  printk("idt_setup_traps\n");
 	idt_setup_from_table(idt_table, def_idts, ARRAY_SIZE(def_idts), true);
 }
 
@@ -248,6 +252,7 @@ static const __initconst struct idt_data early_pf_idts[] = {
  */
 void __init idt_setup_early_pf(void)
 {
+  printk("idt_setup_early_pf\n");
 	idt_setup_from_table(idt_table, early_pf_idts,
 			     ARRAY_SIZE(early_pf_idts), true);
 }
@@ -271,6 +276,7 @@ static void __init idt_map_in_cea(void)
  */
 void __init idt_setup_apic_and_irq_gates(void)
 {
+  printk("idt_setup_apic_and_irq_gates\n");
 	int i = FIRST_EXTERNAL_VECTOR;
 	void *entry;
 

@@ -2819,6 +2819,10 @@ static unsigned long get_segment_base(unsigned int segment)
 		if (idx >= GDT_ENTRIES)
 			return 0;
 
+
+   
+
+    printk("entries!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! :%d \n", sizeof(gdt_page.gdt));
 		desc = raw_cpu_ptr(gdt_page.gdt) + idx;
 	}
 

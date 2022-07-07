@@ -81,9 +81,11 @@ void __init init_IRQ(void)
 	 * then this vector space can be freed and re-used dynamically as the
 	 * irq's migrate etc.
 	 */
-	for (i = 0; i < nr_legacy_irqs(); i++)
+	for (i = 0; i < nr_legacy_irqs(); i++) {
+    printk("nr_lecacy_irqs(): %d \n", nr_legacy_irqs());
+    printk("ISA_IRQ_VECTOR(i): %d\n", ISA_IRQ_VECTOR(i));
 		per_cpu(vector_irq, 0)[ISA_IRQ_VECTOR(i)] = irq_to_desc(i);
-
+  }
 	BUG_ON(irq_init_percpu_irqstack(smp_processor_id()));
 
 	x86_init.irqs.intr_init();

@@ -1909,6 +1909,7 @@ DEFINE_PER_CPU_FIRST(struct fixed_percpu_data,
 		     fixed_percpu_data) __aligned(PAGE_SIZE) __visible;
 EXPORT_PER_CPU_SYMBOL_GPL(fixed_percpu_data);
 
+DEFINE_PER_CPU(char, fixed_percpu_data_test);
 /*
  * The following percpu variables are hot.  Align current_task to
  * cacheline size such that they fall in the same cacheline.

@@ -5024,7 +5024,8 @@ context_switch(struct rq *rq, struct task_struct *prev,
 {
 	prepare_task_switch(rq, prev, next);
 
-	/*
+
+/*
 	 * For paravirt, this is coupled with an exit in switch_to to
 	 * combine the page table reload and the switch backend into
 	 * one hypercall.
@@ -5069,6 +5070,7 @@ context_switch(struct rq *rq, struct task_struct *prev,
 
 	prepare_lock_switch(rq, next, rf);
 
+  //printk("context_switch: %s\n", (const char*) current->comm);
 	/* Here we just switch the register state and the stack. */
 	switch_to(prev, next, prev);
 	barrier();
