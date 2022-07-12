@@ -1348,10 +1348,10 @@ SYSCALL_DEFINE1(close, unsigned int, fd)
 		     retval == -ERESTART_RESTARTBLOCK))
 		retval = -EINTR;
 
-  if (strcmp((const char*)current->comm, "ls") == 0) {
-    dump_stack();
+  //if (strcmp((const char*)current->comm, "ls") == 0) {
+  //  dump_stack();
     //printk("binary:!!!!!!!!!!!!!%s\n", current->comm);
-  }
+ // }
   //dump_stack();
   //struct pt_regs regs;
   //show_regs(&regs);
