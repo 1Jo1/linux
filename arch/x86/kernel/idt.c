@@ -188,7 +188,7 @@ idt_setup_from_table(gate_desc *idt, const struct idt_data *t, int size, bool sy
 
 	for (; size > 0; t++, size--) {
 		idt_init_desc(&desc, t);
-    printk("idt_setup_from_table\n")
+    printk("idt_setup_from_table\n");
 		write_idt_entry(idt, t->vector, &desc);
 		if (sys)
 			set_bit(t->vector, system_vectors);
@@ -197,9 +197,9 @@ idt_setup_from_table(gate_desc *idt, const struct idt_data *t, int size, bool sy
 
 static __init void set_intr_gate(unsigned int n, const void *addr)
 {
-  printk("set_intr_gate\n");
 	struct idt_data data;
 
+  printk("set_intr_gate\n");
 	init_idt_data(&data, n, addr);
 
 	idt_setup_from_table(idt_table, &data, 1, false);
@@ -276,10 +276,10 @@ static void __init idt_map_in_cea(void)
  */
 void __init idt_setup_apic_and_irq_gates(void)
 {
-  printk("idt_setup_apic_and_irq_gates\n");
 	int i = FIRST_EXTERNAL_VECTOR;
 	void *entry;
 
+  printk("idt_setup_apic_and_irq_gates\n");
 	idt_setup_from_table(idt_table, apic_idts, ARRAY_SIZE(apic_idts), true);
 
 	for_each_clear_bit_from(i, system_vectors, FIRST_SYSTEM_VECTOR) {
