@@ -2070,7 +2070,15 @@ static inline void ucode_cpu_init(int cpu)
 
 static inline void tss_setup_ist(struct tss_struct *tss)
 {
-	/* Set up the per-CPU TSS IST stacks */
+
+  printk("tss_setup_ist!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+  printk("DF: %d\n", __this_cpu_ist_top_va(DF));
+  printk("NMI: %d\n", __this_cpu_ist_top_va(NMI));
+  printk("DB: %d\n", __this_cpu_ist_top_va(DB));
+  printk("MCE: %d\n", __this_cpu_ist_top_va(MCE));
+  printk("VC :%d\n", __this_cpu_ist_top_va(VC));
+ 
+  /* Set up the per-CPU TSS IST stacks */
 	tss->x86_tss.ist[IST_INDEX_DF] = __this_cpu_ist_top_va(DF);
 	tss->x86_tss.ist[IST_INDEX_NMI] = __this_cpu_ist_top_va(NMI);
 	tss->x86_tss.ist[IST_INDEX_DB] = __this_cpu_ist_top_va(DB);
