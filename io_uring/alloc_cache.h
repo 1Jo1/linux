@@ -4,10 +4,9 @@
 /*
  * Don't allow the cache to grow beyond this size.
  */
-#define IO_ALLOC_CACHE_MAX	128
+#define IO_ALLOC_CACHE_MAX 128
 
-static inline bool io_alloc_cache_put(struct io_alloc_cache *cache,
-				      void *entry)
+static inline bool io_alloc_cache_put(struct io_alloc_cache *cache, void *entry)
 {
 	if (cache->nr_cached < cache->max_cached) {
 		if (!kasan_mempool_poison_object(entry))
@@ -20,9 +19,11 @@ static inline bool io_alloc_cache_put(struct io_alloc_cache *cache,
 
 static inline void *io_alloc_cache_get(struct io_alloc_cache *cache)
 {
+	printk("io_alloc_cache_get\n");
 	if (cache->nr_cached) {
 		void *entry = cache->entries[--cache->nr_cached];
 
+		printk("io_alloc_cache_get if\n");
 		kasan_mempool_unpoison_object(entry, cache->elem_size);
 		return entry;
 	}

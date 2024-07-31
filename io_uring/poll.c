@@ -686,6 +686,7 @@ static void io_async_queue_proc(struct file *file, struct wait_queue_head *head,
 static struct async_poll *io_req_alloc_apoll(struct io_kiocb *req,
 					     unsigned issue_flags)
 {
+	printk("io_req_alloc_apoll\n");
 	struct io_ring_ctx *ctx = req->ctx;
 	struct async_poll *apoll;
 
@@ -694,6 +695,7 @@ static struct async_poll *io_req_alloc_apoll(struct io_kiocb *req,
 		kfree(apoll->double_poll);
 	} else if (!(issue_flags & IO_URING_F_UNLOCKED)) {
 		apoll = io_alloc_cache_get(&ctx->apoll_cache);
+		printk("apoll cache get\n");
 		if (!apoll)
 			goto alloc_apoll;
 		apoll->poll.retries = APOLL_MAX_RETRY;

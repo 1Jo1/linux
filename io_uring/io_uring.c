@@ -284,6 +284,7 @@ static __cold struct io_ring_ctx *io_ring_ctx_alloc(struct io_uring_params *p)
 		return NULL;
 
 	xa_init(&ctx->io_bl_xa);
+	// printk("SMP_CACHE_BYTES: %d\n", SMP_CACHE_BYTES);
 
 	/*
 	 * Use 5 bits less than the max cq entries, that should give us around
@@ -508,6 +509,7 @@ static void io_prep_async_link(struct io_kiocb *req)
 
 static void io_queue_iowq(struct io_kiocb *req)
 {
+	dump_stack();
 	struct io_kiocb *link = io_prep_linked_timeout(req);
 	struct io_uring_task *tctx = req->task->io_uring;
 
@@ -1332,8 +1334,11 @@ static void io_req_task_cancel(struct io_kiocb *req, struct io_tw_state *ts)
 	io_req_defer_failed(req, req->cqe.res);
 }
 
+
+//Todo
 void io_req_task_submit(struct io_kiocb *req, struct io_tw_state *ts)
 {
+	printk("io_req_task_submit\n");
 	io_tw_lock(req->ctx, ts);
 	/* req->task == current here, checking PF_EXITING is safe */
 	if (unlikely(req->task->flags & PF_EXITING))
@@ -1369,6 +1374,7 @@ static void io_free_batch_list(struct io_ring_ctx *ctx,
 			       struct io_wq_work_node *node)
 	__must_hold(&ctx->uring_lock)
 {
+	printk("io_free_batch_list\n");
 	do {
 		struct io_kiocb *req = container_of(node, struct io_kiocb,
 						    comp_list);
@@ -1380,6 +1386,7 @@ static void io_free_batch_list(struct io_ring_ctx *ctx,
 					continue;
 			}
 			if ((req->flags & REQ_F_POLLED) && req->apoll) {
+				printk("REQ_F_POLLED\n");
 				struct async_poll *apoll = req->apoll;
 
 				if (apoll->double_poll)

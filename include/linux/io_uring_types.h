@@ -233,6 +233,8 @@ struct io_ring_ctx {
 		unsigned int		poll_activated: 1;
 		unsigned int		drain_disabled: 1;
 		unsigned int		compat: 1;
+
+		//hot path!??
 		unsigned int		iowq_limits_set : 1;
 
 		struct task_struct	*submitter_task;
@@ -240,6 +242,8 @@ struct io_ring_ctx {
 		struct percpu_ref	refs;
 
 		enum task_work_notify_mode	notify_method;
+		
+		//SQLPOLL
 		unsigned			sq_thread_idle;
 	} ____cacheline_aligned_in_smp;
 

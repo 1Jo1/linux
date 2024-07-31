@@ -390,6 +390,7 @@ static inline struct io_kiocb *io_extract_req(struct io_ring_ctx *ctx)
 static inline bool io_alloc_req(struct io_ring_ctx *ctx, struct io_kiocb **req)
 {
 	if (unlikely(io_req_cache_empty(ctx))) {
+		printk("io_alloc_req: io req cache empty\n");
 		if (!__io_alloc_req_refill(ctx))
 			return false;
 	}
