@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0
+#include "linux/printk.h"
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/fs.h>
@@ -820,6 +821,8 @@ static int io_rw_init_file(struct io_kiocb *req, fmode_t mode, int rw_type)
 
 static int __io_read(struct io_kiocb *req, unsigned int issue_flags)
 {
+	printk("__io_read\n");
+	dump_stack();
 	bool force_nonblock = issue_flags & IO_URING_F_NONBLOCK;
 	struct io_rw *rw = io_kiocb_to_cmd(req, struct io_rw);
 	struct io_async_rw *io = req->async_data;

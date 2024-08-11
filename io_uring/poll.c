@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0
+#include "linux/printk.h"
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/fs.h>
@@ -171,6 +172,7 @@ static void io_poll_tw_hash_eject(struct io_kiocb *req, struct io_tw_state *ts)
 
 static void io_init_poll_iocb(struct io_poll *poll, __poll_t events)
 {
+	printk("io_init_poll_iocb\n");
 	poll->head = NULL;
 #define IO_POLL_UNMASK	(EPOLLERR|EPOLLHUP|EPOLLNVAL|EPOLLRDHUP)
 	/* mask in events that we always want/need */
@@ -263,6 +265,8 @@ static inline void io_poll_execute(struct io_kiocb *req, int res)
  */
 static int io_poll_check_events(struct io_kiocb *req, struct io_tw_state *ts)
 {
+	printk("io_poll_check_events\n");
+	// dump_stack();
 	int v;
 
 	/* req->task == current here, checking PF_EXITING is safe */
@@ -350,6 +354,7 @@ static int io_poll_check_events(struct io_kiocb *req, struct io_tw_state *ts)
 	return IOU_POLL_NO_ACTION;
 }
 
+//Todo
 void io_poll_task_func(struct io_kiocb *req, struct io_tw_state *ts)
 {
 	int ret;
@@ -429,6 +434,8 @@ static __cold int io_pollfree_wake(struct io_kiocb *req, struct io_poll *poll)
 static int io_poll_wake(struct wait_queue_entry *wait, unsigned mode, int sync,
 			void *key)
 {
+	// printk("io_poll_wake\n");
+	// dump_stack();
 	struct io_kiocb *req = wqe_to_req(wait);
 	struct io_poll *poll = container_of(wait, struct io_poll, wait);
 	__poll_t mask = key_to_poll(key);
@@ -542,6 +549,8 @@ static void __io_queue_proc(struct io_poll *poll, struct io_poll_table *pt,
 	if (poll->events & EPOLLEXCLUSIVE) {
 		add_wait_queue_exclusive(head, &poll->wait);
 	} else {
+		printk("__io_queue_proc\n");
+		printk("add_wait_queue\n");
 		add_wait_queue(head, &poll->wait);
 	}
 }
@@ -549,6 +558,8 @@ static void __io_queue_proc(struct io_poll *poll, struct io_poll_table *pt,
 static void io_poll_queue_proc(struct file *file, struct wait_queue_head *head,
 			       struct poll_table_struct *p)
 {
+	// printk("io_poll_queue_proc\n");
+	// dump_stack();
 	struct io_poll_table *pt = container_of(p, struct io_poll_table, pt);
 	struct io_poll *poll = io_kiocb_to_cmd(pt->req, struct io_poll);
 
@@ -686,7 +697,7 @@ static void io_async_queue_proc(struct file *file, struct wait_queue_head *head,
 static struct async_poll *io_req_alloc_apoll(struct io_kiocb *req,
 					     unsigned issue_flags)
 {
-	printk("io_req_alloc_apoll\n");
+	// printk("io_req_alloc_apoll\n");
 	struct io_ring_ctx *ctx = req->ctx;
 	struct async_poll *apoll;
 
@@ -695,7 +706,7 @@ static struct async_poll *io_req_alloc_apoll(struct io_kiocb *req,
 		kfree(apoll->double_poll);
 	} else if (!(issue_flags & IO_URING_F_UNLOCKED)) {
 		apoll = io_alloc_cache_get(&ctx->apoll_cache);
-		printk("apoll cache get\n");
+		//printk("apoll cache get\n");
 		if (!apoll)
 			goto alloc_apoll;
 		apoll->poll.retries = APOLL_MAX_RETRY;

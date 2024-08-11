@@ -19,11 +19,11 @@ static inline bool io_alloc_cache_put(struct io_alloc_cache *cache, void *entry)
 
 static inline void *io_alloc_cache_get(struct io_alloc_cache *cache)
 {
-	printk("io_alloc_cache_get\n");
+	// printk("io_alloc_cache_get\n");
 	if (cache->nr_cached) {
 		void *entry = cache->entries[--cache->nr_cached];
 
-		printk("io_alloc_cache_get if\n");
+		// printk("io_alloc_cache_get if\n");
 		kasan_mempool_unpoison_object(entry, cache->elem_size);
 		return entry;
 	}

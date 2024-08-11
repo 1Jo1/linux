@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0
+#include "linux/printk.h"
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/file.h>
@@ -1421,6 +1422,7 @@ int io_send_zc(struct io_kiocb *req, unsigned int issue_flags)
 
 int io_sendmsg_zc(struct io_kiocb *req, unsigned int issue_flags)
 {
+	dump_stack();
 	struct io_sr_msg *sr = io_kiocb_to_cmd(req, struct io_sr_msg);
 	struct io_async_msghdr *kmsg = req->async_data;
 	struct socket *sock;

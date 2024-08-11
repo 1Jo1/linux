@@ -39,6 +39,7 @@
  * Copyright (C) 2018-2019 Jens Axboe
  * Copyright (c) 2018-2019 Christoph Hellwig
  */
+#include "linux/printk.h"
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/errno.h>
@@ -509,7 +510,7 @@ static void io_prep_async_link(struct io_kiocb *req)
 
 static void io_queue_iowq(struct io_kiocb *req)
 {
-	dump_stack();
+	// dump_stack();
 	struct io_kiocb *link = io_prep_linked_timeout(req);
 	struct io_uring_task *tctx = req->task->io_uring;
 
@@ -1338,7 +1339,7 @@ static void io_req_task_cancel(struct io_kiocb *req, struct io_tw_state *ts)
 //Todo
 void io_req_task_submit(struct io_kiocb *req, struct io_tw_state *ts)
 {
-	printk("io_req_task_submit\n");
+	// printk("io_req_task_submit\n");
 	io_tw_lock(req->ctx, ts);
 	/* req->task == current here, checking PF_EXITING is safe */
 	if (unlikely(req->task->flags & PF_EXITING))
@@ -1375,6 +1376,7 @@ static void io_free_batch_list(struct io_ring_ctx *ctx,
 	__must_hold(&ctx->uring_lock)
 {
 	printk("io_free_batch_list\n");
+	dump_stack();
 	do {
 		struct io_kiocb *req = container_of(node, struct io_kiocb,
 						    comp_list);
@@ -1386,7 +1388,7 @@ static void io_free_batch_list(struct io_ring_ctx *ctx,
 					continue;
 			}
 			if ((req->flags & REQ_F_POLLED) && req->apoll) {
-				printk("REQ_F_POLLED\n");
+				// printk("REQ_F_POLLED\n");
 				struct async_poll *apoll = req->apoll;
 
 				if (apoll->double_poll)
@@ -2401,6 +2403,8 @@ static int io_cqring_wait(struct io_ring_ctx *ctx, int min_events,
 	struct io_wait_queue iowq;
 	struct io_rings *rings = ctx->rings;
 	int ret;
+	
+	printk("io_cqring_wait\n");
 
 	if (!io_allowed_run_tw(ctx))
 		return -EEXIST;
@@ -2449,6 +2453,7 @@ static int io_cqring_wait(struct io_ring_ctx *ctx, int min_events,
 	io_napi_busy_loop(ctx, &iowq);
 
 	trace_io_uring_cqring_wait(ctx, min_events);
+	printk("before do while io_cq_wait\n");
 	do {
 		int nr_wait = (int) iowq.cq_tail - READ_ONCE(ctx->rings->cq.tail);
 		unsigned long check_cq;
@@ -2461,7 +2466,9 @@ static int io_cqring_wait(struct io_ring_ctx *ctx, int min_events,
 							TASK_INTERRUPTIBLE);
 		}
 
+		printk("before io_cqring_wait_schedule\n");
 		ret = io_cqring_wait_schedule(ctx, &iowq);
+		printk("after io_cqring_wait_schedule\n");
 		__set_current_state(TASK_RUNNING);
 		atomic_set(&ctx->cq_wait_nr, IO_CQ_WAKE_INIT);
 
@@ -2471,6 +2478,7 @@ static int io_cqring_wait(struct io_ring_ctx *ctx, int min_events,
 		 * now rather than let the caller do another wait loop.
 		 */
 		io_run_task_work();
+		printk("io_run_task_work\n");
 		if (!llist_empty(&ctx->work_llist))
 			io_run_local_work(ctx, nr_wait);
 
@@ -2501,7 +2509,9 @@ static int io_cqring_wait(struct io_ring_ctx *ctx, int min_events,
 			ret = 0;
 			break;
 		}
+		printk("cond_resched before\n");
 		cond_resched();
+		printk("cond_resched after\n");
 	} while (1);
 
 	if (!(ctx->flags & IORING_SETUP_DEFER_TASKRUN))
@@ -3164,6 +3174,7 @@ SYSCALL_DEFINE6(io_uring_enter, unsigned int, fd, u32, to_submit,
 			       IORING_ENTER_REGISTERED_RING)))
 		return -EINVAL;
 
+	printk("io_uring_enter\n");
 	/*
 	 * Ring fd has been registered via IORING_REGISTER_RING_FDS, we
 	 * need only dereference our task private array to find it.
